@@ -98,4 +98,49 @@
             const startDate = new Date(document.getElementById("startdate").value);
             const endDate = new Date(document.getElementById("enddate").value);
             const table = document.getElementById('pitchTable');
-            const rows = table
+            const rows = table.rows;
+
+            for (let i = 1; i < rows.length; i++) {
+                const rowDate = new Date(rows[i].cells[1].textContent);
+                if (rowDate >= startDate && rowDate <= endDate) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        let currentSortIndex = -1;
+        let currentSortOrder = 'asc';
+
+        function sortTable(columnIndex) {
+            const table = document.getElementById('pitchTable');
+            const rows = Array.from(table.rows).slice(1);
+            const direction = (currentSortIndex === columnIndex && currentSortOrder === 'asc') ? 'desc' : 'asc';
+
+            rows.sort((a, b) => {
+                const aText = a.cells[columnIndex].textContent;
+                const bText = b.cells[columnIndex].textContent;
+                return direction === 'asc' ? (aText > bText ? 1 : -1) : (aText < bText ? 1 : -1);
+            });
+
+            rows.forEach(row => table.appendChild(row));
+
+            // Highlight the current sorted column
+            Array.from(table.rows[0].cells).forEach((cell, index) => {
+                cell.classList.remove('sorted');
+                if (index === columnIndex) {
+                    cell.classList.add('sorted');
+                }
+            });
+
+            currentSortIndex = columnIndex;
+            currentSortOrder = direction;
+        }
+
+        // Initialize the table on page load
+        window.onload = fetchData;
+    </script>
+</body>
+</html>
+
